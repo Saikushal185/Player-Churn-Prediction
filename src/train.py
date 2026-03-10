@@ -281,7 +281,7 @@ def train_all_models(
     # ------------------------------------------------------------------
     log.info("Tuning XGBoost with Optuna (%d trials) …", n_trials)
     xgb_study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
-    xgb_study.optimize(lambda t: _objective_xgb(t, X_train, y_train, cv), n_trials=n_trials)
+    xgb_study.optimize(lambda t: _objective_xgb(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
     best_xgb_params = xgb_study.best_params
     best_xgb_params.update({"eval_metric": "logloss", "use_label_encoder": False,
                               "random_state": 42, "n_jobs": -1})
@@ -299,7 +299,7 @@ def train_all_models(
     # ------------------------------------------------------------------
     log.info("Tuning LightGBM with Optuna (%d trials) …", n_trials)
     lgbm_study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
-    lgbm_study.optimize(lambda t: _objective_lgbm(t, X_train, y_train, cv), n_trials=n_trials)
+    lgbm_study.optimize(lambda t: _objective_lgbm(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
     best_lgbm_params = lgbm_study.best_params
     best_lgbm_params.update({"class_weight": "balanced", "random_state": 42,
                                "n_jobs": -1, "verbosity": -1})
