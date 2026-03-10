@@ -58,10 +58,14 @@ log = logging.getLogger(__name__)
 # Page config
 # ---------------------------------------------------------------------------
 st.set_page_config(
-    page_title="🎮 Player Churn Dashboard",
+    page_title="Player Churn Dashboard",
     page_icon="🎮",
     layout="wide",
     initial_sidebar_state="expanded",
+    menu_items={
+        "Report a bug": "https://github.com/Saikushal185/Player-Churn-Prediction/issues",
+        "About": "Player Churn Prediction — End-to-End ML Pipeline",
+    },
 )
 
 # ---------------------------------------------------------------------------
