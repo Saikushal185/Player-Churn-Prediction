@@ -119,6 +119,9 @@ def cap_outliers(df: pd.DataFrame, cols: list[str], lower: float = 0.01, upper: 
     for col in cols:
         lo = df[col].quantile(lower)
         hi = df[col].quantile(upper)
+        if lo == hi:
+            log.warning("  %s: zero-variance after quantile clipping — skipping.", col)
+            continue
         clipped = df[col].clip(lower=lo, upper=hi)
         n_clipped = (df[col] != clipped).sum()
         df[col] = clipped
