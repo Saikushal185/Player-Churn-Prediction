@@ -1,0 +1,46 @@
+# ============================================================
+# Player Churn Prediction — Requirements
+# Python 3.10+
+# Install: pip install -r requirements.txt
+# ============================================================
+
+# Core data science
+numpy
+pandas
+scipy
+
+# Machine learning
+scikit-learn
+xgboost
+lightgbm
+imbalanced-learn
+
+# Hyperparameter optimisation
+optuna
+
+# Explainability
+shap
+
+# Visualisation
+matplotlib
+seaborn
+plotly
+kaleido
+
+# Dashboard
+streamlit
+Pillow
+
+# API
+flask
+flask-cors
+gunicorn
+
+# Utilities
+joblib
+tqdm
+
+# Jupyter
+jupyterlab
+ipykernel
+nbformat
