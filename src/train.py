@@ -519,7 +519,11 @@ def main() -> None:
         m = evaluate_on_test(res["model"], res["threshold"], X_test, y_test, name)
         all_metrics.append(m)
 
-    comparison_df = pd.DataFrame(all_metrics).sort_values("test_auc", ascending=False)
+    comparison_df = (
+        pd.DataFrame(all_metrics)
+        .sort_values("test_auc", ascending=False)
+        .reset_index(drop=True)
+    )
     comparison_df.to_csv(MODEL_DIR / "model_comparison.csv", index=False)
     log.info("Model comparison:\n%s", comparison_df.to_string(index=False))
 
