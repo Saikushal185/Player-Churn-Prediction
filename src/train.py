@@ -387,6 +387,7 @@ def plot_roc_curves(results: dict, y_val: np.ndarray, fig_dir: Path = FIG_DIR) -
     ax.set_ylabel("True Positive Rate")
     ax.set_title("ROC Curves — Model Comparison")
     ax.legend(loc="lower right")
+    ax.grid(True, alpha=0.3)
     fig_dir.mkdir(parents=True, exist_ok=True)
     fig.savefig(fig_dir / "roc_curves.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
