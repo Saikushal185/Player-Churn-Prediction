@@ -234,6 +234,7 @@ def _build_prediction_response(player_dict: dict, proba: float, threshold: float
             "session_count": player_dict.get("session_count"),
             "last_login_days_ago": player_dict.get("last_login_days_ago"),
             "total_spend_usd": player_dict.get("total_spend_usd"),
+            "win_rate": player_dict.get("win_rate"),
             "consecutive_losses": player_dict.get("consecutive_losses"),
         },
     }
