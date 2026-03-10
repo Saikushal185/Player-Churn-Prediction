@@ -78,6 +78,7 @@ MODEL_DIR = ROOT / "models"
 FIG_DIR = ROOT / "reports" / "figures"
 
 N_OPTUNA_TRIALS = 30   # Increase for better tuning; reduce for speed
+OPTUNA_TIMEOUT = 120   # Max seconds per model tuning run (wall-clock guard)
 CV_FOLDS = 5
 
 
@@ -263,7 +264,7 @@ def train_all_models(
     # ------------------------------------------------------------------
     log.info("Tuning Random Forest with Optuna (%d trials) …", n_trials)
     rf_study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
-    rf_study.optimize(lambda t: _objective_rf(t, X_train, y_train, cv), n_trials=n_trials)
+    rf_study.optimize(lambda t: _objective_rf(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
     best_rf_params = rf_study.best_params
     best_rf_params.update({"class_weight": "balanced", "n_jobs": -1, "random_state": 42})
     rf = RandomForestClassifier(**best_rf_params)
