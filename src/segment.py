@@ -238,7 +238,10 @@ def fit_kmeans(X_scaled: np.ndarray, k: int = 4) -> KMeans:
     km.fit(X_scaled)
     sil = silhouette_score(X_scaled, km.labels_, sample_size=10000)
     db  = davies_bouldin_score(X_scaled, km.labels_)
-    log.info("K-Means (k=%d)  silhouette=%.4f  davies-bouldin=%.4f", k, sil, db)
+    log.info(
+        "K-Means (k=%d)  inertia=%.1f  silhouette=%.4f  davies-bouldin=%.4f",
+        k, km.inertia_, sil, db,
+    )
     return km
 
 
