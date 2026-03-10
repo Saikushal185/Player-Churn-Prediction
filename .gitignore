@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb~
+
+# Data files (large — use DVC or Git LFS for versioning)
+data/players.csv
+data/X_train.csv
+data/X_val.csv
+data/X_test.csv
+data/y_train.csv
+data/y_val.csv
+data/y_test.csv
+data/players_enriched.csv
+data/players_featured.csv
+data/players_segmented.csv
+data/X_shap_sample.csv
+
+# Models (large binary files)
+models/*.pkl
+models/*.npy
+models/*.joblib
+
+# Reports / generated figures
+reports/figures/*.png
+reports/figures/*.html
+reports/top_risk_players.csv
+reports/top10_features.csv
+reports/segment_profiles.csv
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Secrets
+.env
+secrets.yaml
+credentials.json
+
+# Coverage
+.coverage
+htmlcov/
