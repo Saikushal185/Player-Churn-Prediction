@@ -30,6 +30,16 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+MAX_RECENCY_DAYS = 180       # cap for recency normalisation
+MAX_SESSIONS = 500           # cap for session frequency normalisation
+MAX_SESSION_DURATION = 240   # cap for session duration normalisation (minutes)
+MAX_FRIENDS = 50             # cap for friend count normalisation
+LOSS_STREAK_THRESHOLD = 4    # consecutive losses above which churn risk spikes
+LOSS_STREAK_SCALE = 2.0      # sigmoid sharpness for loss streak risk
+
+# ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).parent.parent
