@@ -94,7 +94,7 @@ def compute_win_rate_trend(df: pd.DataFrame) -> pd.Series:
 
     Formula: win_rate - (consecutive_losses / 15) * 0.5
     """
-    consecutive_norm = df["consecutive_losses"] / 15.0
+    consecutive_norm = df["consecutive_losses"].fillna(0) / 15.0
     return (df["win_rate"].fillna(0.5) - consecutive_norm * 0.5).round(4)
 
 
