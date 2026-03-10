@@ -135,7 +135,7 @@ def generate_players(n: int = N_PLAYERS, seed: int = RANDOM_SEED) -> pd.DataFram
     friend_count = np.where(churn_label == 1,
                             friend_count_base // 2,
                             friend_count_base)
-    friend_count = _clip(friend_count, 0, 200)
+    friend_count = _clip(friend_count, 0, 200).astype(int)
 
     # -----------------------------------------------------------------------
     # 10. game_mode_primary
