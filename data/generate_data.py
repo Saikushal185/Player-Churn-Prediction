@@ -199,7 +199,7 @@ def main() -> None:
     df = generate_players()
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(OUTPUT_PATH, index=False)
-    log.info("Saved %d rows → %s", len(df), OUTPUT_PATH)
+    log.info("Saved %d rows × %d cols → %s", len(df), len(df.columns), OUTPUT_PATH)
     log.info("Schema:\n%s", df.dtypes)
     log.info("Sample:\n%s", df.head(3).to_string())
 
