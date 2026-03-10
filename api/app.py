@@ -293,7 +293,7 @@ def predict() -> tuple:
     }
     """
     if _model_bundle is None or _preprocessor is None:
-        return jsonify({"error": "Model not loaded. Run training pipeline first."}), 503
+        return jsonify({"error": "Model not loaded. Run training pipeline first.", "code": "MODEL_UNAVAILABLE"}), 503
 
     data = request.get_json(silent=True)
     if not data:
