@@ -119,7 +119,8 @@ def generate_players(n: int = N_PLAYERS, seed: int = RANDOM_SEED) -> pd.DataFram
     # 8. total_spend_usd  (heavy-tailed; ~40 % zero-spenders)
     # -----------------------------------------------------------------------
     spend_zero_mask = rng.random(n) < 0.40
-    spend_whale_mask = rng.random(n) < 0.05
+    # Whale mask only applies to non-zero spenders to avoid overlap
+    spend_whale_mask = (~spend_zero_mask) & (rng.random(n) < 0.05)
     spend_normal = rng.exponential(scale=25, size=n)
     spend_whale = rng.uniform(200, 2000, size=n)
     total_spend_usd = np.where(spend_zero_mask, 0.0,
