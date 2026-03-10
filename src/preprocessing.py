@@ -158,8 +158,8 @@ def engineer_rfm(df: pd.DataFrame) -> pd.DataFrame:
         df[f"{col}_pct"] = df[col].rank(pct=True) * 100
 
     df["rfm_score"] = (
-        df["rfm_recency_pct"] + df["rfm_frequency_pct"] + df["rfm_monetary_pct"]
-    ) / 3.0
+        (df["rfm_recency_pct"] + df["rfm_frequency_pct"] + df["rfm_monetary_pct"]) / 3.0
+    ).round(2)
 
     df.drop(columns=["rfm_recency_pct", "rfm_frequency_pct", "rfm_monetary_pct"], inplace=True)
     log.info("RFM features added: rfm_recency, rfm_frequency, rfm_monetary, rfm_score")
