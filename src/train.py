@@ -267,6 +267,7 @@ def train_all_models(
     log.info("Tuning Random Forest with Optuna (%d trials) …", n_trials)
     rf_study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
     rf_study.optimize(lambda t: _objective_rf(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
+    log.info("RF Optuna best trial value (CV AUC): %.4f", rf_study.best_value)
     best_rf_params = rf_study.best_params
     best_rf_params.update({"class_weight": "balanced", "n_jobs": -1, "random_state": 42})
     rf = RandomForestClassifier(**best_rf_params)
