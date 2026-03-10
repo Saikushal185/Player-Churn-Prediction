@@ -176,7 +176,8 @@ def compute_achievement_velocity(df: pd.DataFrame) -> pd.Series:
     content exhaustion or frustration.
     """
     playtime = df["total_playtime_hours"].clip(lower=0.5)
-    return (df["achievement_count"] / playtime).round(4)
+    velocity = df["achievement_count"] / playtime
+    return velocity.clip(upper=50).round(4)
 
 
 def compute_social_engagement_ratio(df: pd.DataFrame) -> pd.Series:
