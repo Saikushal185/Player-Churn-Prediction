@@ -2,12 +2,13 @@
 # Player Churn Prediction — Requirements
 # Python 3.10+
 # Install: pip install -r requirements.txt
+# Last updated: 2026-03
 # ============================================================
 
 # Core data science
-numpy
-pandas
-scipy
+numpy>=1.24
+pandas>=2.0
+scipy>=1.11
 
 # Machine learning
 scikit-learn
