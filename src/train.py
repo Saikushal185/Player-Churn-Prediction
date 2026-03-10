@@ -123,10 +123,12 @@ def apply_smote(X: np.ndarray, y: np.ndarray, seed: int = 42) -> tuple:
     -------
     (X_resampled, y_resampled)
     """
-    log.info("Applying SMOTE … class distribution before: %s", dict(zip(*np.unique(y, return_counts=True))))
+    classes, counts = np.unique(y, return_counts=True)
+    log.info("Applying SMOTE … class distribution before: %s", dict(zip(classes.tolist(), counts.tolist())))
     sm = SMOTE(random_state=seed)
     X_res, y_res = sm.fit_resample(X, y)
-    log.info("After SMOTE: %s", dict(zip(*np.unique(y_res, return_counts=True))))
+    classes_r, counts_r = np.unique(y_res, return_counts=True)
+    log.info("After SMOTE: %s | total samples: %d", dict(zip(classes_r.tolist(), counts_r.tolist())), len(y_res))
     return X_res, y_res
 
 
