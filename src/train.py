@@ -351,6 +351,7 @@ def evaluate_on_test(
         "f1_churn": round(report["1"]["f1-score"], 4),
         "precision_churn": round(report["1"]["precision"], 4),
         "recall_churn": round(report["1"]["recall"], 4),
+        "f1_macro": round(report["macro avg"]["f1-score"], 4),
         "threshold": round(threshold, 4),
     }
     log.info(
