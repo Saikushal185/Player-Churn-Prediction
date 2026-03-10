@@ -265,8 +265,8 @@ def split_data(
         X_train_val, y_train_val, test_size=val_relative, stratify=y_train_val, random_state=seed
     )
     log.info(
-        "Split → train: %d | val: %d | test: %d",
-        len(X_train), len(X_val), len(X_test),
+        "Split → train: %d | val: %d | test: %d | total: %d",
+        len(X_train), len(X_val), len(X_test), len(X_train) + len(X_val) + len(X_test),
     )
     log.info(
         "Churn rate → train: %.2f%% | val: %.2f%% | test: %.2f%%",
