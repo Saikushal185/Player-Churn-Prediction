@@ -295,9 +295,12 @@ def predict() -> tuple:
     if _model_bundle is None or _preprocessor is None:
         return jsonify({"error": "Model not loaded. Run training pipeline first.", "code": "MODEL_UNAVAILABLE"}), 503
 
+    if not request.is_json:
+        return jsonify({"error": "Content-Type must be application/json.", "code": "INVALID_CONTENT_TYPE"}), 415
+
     data = request.get_json(silent=True)
     if not data:
-        return jsonify({"error": "Request body must be valid JSON."}), 400
+        return jsonify({"error": "Request body must be valid JSON.", "code": "INVALID_JSON"}), 400
 
     errors = validate_player_data(data)
     if errors:
