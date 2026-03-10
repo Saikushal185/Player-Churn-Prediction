@@ -45,3 +45,7 @@ tqdm
 jupyterlab
 ipykernel
 nbformat
+
+# Testing
+pytest>=7.0
+pytest-cov
