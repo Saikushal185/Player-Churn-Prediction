@@ -418,6 +418,7 @@ def plot_pr_curves(results: dict, y_val: np.ndarray, fig_dir: Path = FIG_DIR) ->
     ax.set_ylabel("Precision")
     ax.set_title("Precision-Recall Curves — Model Comparison")
     ax.legend(loc="upper right")
+    ax.grid(True, alpha=0.3)
     fig.savefig(fig_dir / "pr_curves.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     log.info("Saved PR curves → %s", fig_dir / "pr_curves.png")
