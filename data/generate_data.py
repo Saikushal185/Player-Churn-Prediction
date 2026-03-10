@@ -187,7 +187,8 @@ def generate_players(n: int = N_PLAYERS, seed: int = RANDOM_SEED) -> pd.DataFram
         null_idx = rng.choice(n, size=int(n * 0.02), replace=False)
         df.loc[null_idx, col] = np.nan
 
-    log.info("Churn rate: %.1f %%", df["churn_label"].mean() * 100)
+    n_churned = df["churn_label"].sum()
+    log.info("Churn rate: %.1f %% (%d churned / %d total)", df["churn_label"].mean() * 100, n_churned, len(df))
     log.info("Null counts:\n%s", df.isnull().sum()[df.isnull().sum() > 0])
     return df
 
