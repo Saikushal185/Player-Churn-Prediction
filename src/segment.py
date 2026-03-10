@@ -199,6 +199,7 @@ def select_optimal_k(X_scaled: np.ndarray, k_range: range = range(2, 9)) -> int:
     ax1.set_title("Elbow Method")
     ax1.axvline(x=4, color="red", linestyle="--", label="k=4 (chosen)")
     ax1.legend()
+    ax1.grid(True, alpha=0.3)
 
     ax2.plot(list(k_range), silhouettes, "go-")
     ax2.set_xlabel("Number of Clusters (k)")
@@ -206,6 +207,7 @@ def select_optimal_k(X_scaled: np.ndarray, k_range: range = range(2, 9)) -> int:
     ax2.set_title("Silhouette Scores")
     ax2.axvline(x=4, color="red", linestyle="--", label="k=4 (chosen)")
     ax2.legend()
+    ax2.grid(True, alpha=0.3)
 
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     fig.savefig(FIG_DIR / "cluster_elbow.png", dpi=150, bbox_inches="tight")
