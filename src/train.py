@@ -259,7 +259,7 @@ def train_all_models(
     lr_thresh = find_optimal_threshold(y_val, lr_proba)
     results["LogisticRegression"] = {"model": lr, "val_auc": lr_auc, "threshold": lr_thresh,
                                       "proba_val": lr_proba}
-    log.info("Logistic Regression  →  val AUC: %.4f", lr_auc)
+    log.info("Logistic Regression  →  val AUC: %.4f  (C=1.0, solver=lbfgs)", lr_auc)
 
     # ------------------------------------------------------------------
     # 2. Random Forest (Optuna)
