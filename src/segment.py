@@ -213,7 +213,11 @@ def select_optimal_k(X_scaled: np.ndarray, k_range: range = range(2, 9)) -> int:
     log.info("Elbow/silhouette plot saved → %s", FIG_DIR / "cluster_elbow.png")
 
     best_k = int(k_range[np.argmax(silhouettes)])
-    log.info("Best silhouette k=%d; using k=4 as per business requirement.", best_k)
+    best_sil = max(silhouettes)
+    log.info(
+        "Best silhouette k=%d (score=%.4f); using k=4 as per business requirement.",
+        best_k, best_sil,
+    )
     return 4
 
 
