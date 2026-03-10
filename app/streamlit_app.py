@@ -80,7 +80,10 @@ st.markdown("""
     padding: 1.2rem;
     text-align: center;
     color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.15s ease;
 }
+.metric-card:hover { transform: translateY(-2px); }
 .metric-value { font-size: 2rem; font-weight: bold; margin: 0.3rem 0; }
 .metric-label { font-size: 0.85rem; color: #aaa; }
 .churn-high   { color: #e74c3c; }
