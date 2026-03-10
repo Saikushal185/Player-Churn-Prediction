@@ -151,7 +151,7 @@ def engineer_rfm(df: pd.DataFrame) -> pd.DataFrame:
     max_days = df["last_login_days_ago"].max() + 1
     df["rfm_recency"] = max_days - df["last_login_days_ago"]
     df["rfm_frequency"] = df["session_count"]
-    df["rfm_monetary"] = df["total_spend_usd"].fillna(0)
+    df["rfm_monetary"] = np.log1p(df["total_spend_usd"].fillna(0))
 
     # Percentile rank each dimension, then average
     for col in ["rfm_recency", "rfm_frequency", "rfm_monetary"]:
