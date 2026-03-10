@@ -250,6 +250,7 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
         "spend_recency_interaction",
     ]
     log.info("Added %d engineered features: %s", len(new_features), new_features)
+    log.info("Dataset shape after feature engineering: %d rows × %d cols", *df.shape)
     return df
 
 
