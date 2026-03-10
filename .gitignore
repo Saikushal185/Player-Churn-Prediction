@@ -69,3 +69,9 @@ credentials.json
 # Coverage
 .coverage
 htmlcov/
+
+# ML / debug artefacts
+error_log*.txt
+api_err*.txt
+optuna.db
+optuna_*.db
