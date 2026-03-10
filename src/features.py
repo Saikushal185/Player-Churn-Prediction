@@ -113,12 +113,11 @@ def compute_engagement_score(df: pd.DataFrame) -> pd.Series:
 
     Scores below 30 → high-churn risk cohort for targeted re-engagement.
     """
-    # Each component normalised to [0, 1]
-    max_days = 180
-    recency_score = 1.0 - (df["last_login_days_ago"].clip(0, max_days) / max_days)
-    freq_score = (df["session_count"].clip(0, 500) / 500)
-    duration_score = (df["avg_session_duration"].fillna(45).clip(5, 240) / 240)
-    social_score = (df["friend_count"].fillna(0).clip(0, 50) / 50)
+    # Each component normalised to [0, 1] using module-level constants
+    recency_score = 1.0 - (df["last_login_days_ago"].clip(0, MAX_RECENCY_DAYS) / MAX_RECENCY_DAYS)
+    freq_score = (df["session_count"].clip(0, MAX_SESSIONS) / MAX_SESSIONS)
+    duration_score = (df["avg_session_duration"].fillna(45).clip(5, MAX_SESSION_DURATION) / MAX_SESSION_DURATION)
+    social_score = (df["friend_count"].fillna(0).clip(0, MAX_FRIENDS) / MAX_FRIENDS)
 
     composite = (
         0.40 * recency_score
