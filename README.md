@@ -171,10 +171,12 @@ player-churn-prediction/
 
 ### Improvements Over Base
 - **SMOTE** oversampling for class balance
-- **Optuna** Bayesian hyperparameter search (30 trials/model)
+- **Optuna** Bayesian hyperparameter search (30 trials/model, 120s timeout)
 - **StratifiedKFold** (5-fold) cross-validation
 - **Precision-Recall curve** with optimal threshold selection
 - **Calibration plot** for probability trustworthiness
+- **Macro-avg F1** tracked alongside churn-class F1 in model comparison
+- **log1p transform** on RFM monetary to reduce spend skew
 
 ---
 
