@@ -529,7 +529,9 @@ def main() -> None:
 
     # Save all models for later use in the dashboard
     for name, res in results.items():
-        joblib.dump(res["model"], MODEL_DIR / f"{name.lower()}_model.pkl")
+        model_path = MODEL_DIR / f"{name.lower()}_model.pkl"
+        joblib.dump(res["model"], model_path)
+        log.info("Saved %s → %s", name, model_path)
 
     # Plots
     plot_roc_curves(results, y_val)
