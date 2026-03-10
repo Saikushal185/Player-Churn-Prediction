@@ -141,7 +141,7 @@ def compute_loss_streak_risk(df: pd.DataFrame) -> pd.Series:
 
     Formula: sigmoid((consecutive_losses - 4) / 2)
     """
-    x = (df["consecutive_losses"] - 4) / 2.0
+    x = (df["consecutive_losses"] - LOSS_STREAK_THRESHOLD) / LOSS_STREAK_SCALE
     return (1 / (1 + np.exp(-x))).round(4)
 
 
