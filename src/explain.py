@@ -61,10 +61,15 @@ FEATURE_DESCRIPTIONS = {
     "total_spend_usd": "total spend ($)",
     "win_rate": "win rate",
     "rfm_score": "RFM engagement score",
+    "rfm_recency": "recency score",
+    "rfm_frequency": "frequency score",
+    "rfm_monetary": "monetary score (log1p)",
     "engagement_score": "engagement score",
     "loss_streak_risk": "loss-streak risk",
     "rolling_avg_sessions_7d": "sessions (last 7 days)",
     "spend_per_session": "spend per session ($)",
+    "achievement_velocity": "achievements per hour",
+    "social_engagement_ratio": "social engagement ratio",
 }
 
 
