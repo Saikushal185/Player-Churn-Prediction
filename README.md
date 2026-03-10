@@ -293,7 +293,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-*Generated with Claude Code | Anthropic*
+*Generated with Claude Code | Sai Kushal*
 <!-- whitespace commit 1 -->
 <!-- whitespace commit 2 -->
 <!-- whitespace commit 3 -->
