@@ -175,11 +175,11 @@ def _preprocess_single(player_dict: dict) -> np.ndarray:
     """
     df = pd.DataFrame([player_dict])
 
-    # RFM features (approximated for a single record)
+    # RFM features (approximated for a single record; log1p monetary matches training)
     max_days = 180
     df["rfm_recency"] = max_days - df["last_login_days_ago"].clip(upper=max_days)
     df["rfm_frequency"] = df["session_count"]
-    df["rfm_monetary"] = df["total_spend_usd"].fillna(0)
+    df["rfm_monetary"] = np.log1p(df["total_spend_usd"].fillna(0))
     df["rfm_score"] = 50.0  # percentile unknown for single record
 
     df = engineer_features(df)
