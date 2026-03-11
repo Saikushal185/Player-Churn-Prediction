@@ -161,7 +161,6 @@ def _objective_xgb(trial, X, y, cv):
         "min_child_weight": trial.suggest_int("min_child_weight", 1, 10),
         "scale_pos_weight": trial.suggest_float("scale_pos_weight", 1.0, 5.0),
         "eval_metric": "logloss",
-        "use_label_encoder": False,
         "random_state": 42,
         "n_jobs": -1,
     }
@@ -286,7 +285,7 @@ def train_all_models(
     xgb_study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
     xgb_study.optimize(lambda t: _objective_xgb(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
     best_xgb_params = xgb_study.best_params
-    best_xgb_params.update({"eval_metric": "logloss", "use_label_encoder": False,
+    best_xgb_params.update({"eval_metric": "logloss",
                               "random_state": 42, "n_jobs": -1})
     xgb = XGBClassifier(**best_xgb_params)
     xgb.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
