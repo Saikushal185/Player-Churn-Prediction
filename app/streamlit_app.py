@@ -170,8 +170,8 @@ def predict_single(player_dict: dict, model_bundle: dict, preprocessor) -> tuple
     -------
     (churn_probability, risk_tier)
     """
-    from src.features import engineer_features
-    from src.preprocessing import NUMERIC_FEATURES, CATEGORICAL_FEATURES
+    from features import engineer_features
+    from preprocessing import NUMERIC_FEATURES, CATEGORICAL_FEATURES
 
     df_single = pd.DataFrame([player_dict])
 
@@ -179,7 +179,7 @@ def predict_single(player_dict: dict, model_bundle: dict, preprocessor) -> tuple
     max_days = 180
     df_single["rfm_recency"] = max_days - df_single["last_login_days_ago"]
     df_single["rfm_frequency"] = df_single["session_count"]
-    df_single["rfm_monetary"] = df_single["total_spend_usd"].fillna(0)
+    df_single["rfm_monetary"] = np.log1p(df_single["total_spend_usd"].fillna(0))
     df_single["rfm_score"] = 50.0  # default percentile for single record
 
     df_single = engineer_features(df_single)
@@ -318,7 +318,6 @@ def render_sidebar(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Filtered players:** {len(df):,}")
 
     # Apply filters
     mask = (
@@ -327,6 +326,7 @@ def render_sidebar(df: pd.DataFrame) -> pd.DataFrame:
         & df["spend_tier_label"].isin(selected_tiers)
     )
     filtered = df[mask]
+    st.sidebar.markdown(f"**Filtered players:** {len(filtered):,}")
     return filtered
 
 
@@ -600,7 +600,7 @@ def tab_segments(df: pd.DataFrame) -> None:
 
     with col_strat:
         st.subheader("Retention Strategies")
-        from src.segment import RETENTION_STRATEGIES
+        from segment import RETENTION_STRATEGIES
         selected_seg = st.selectbox("Select Segment", list(RETENTION_STRATEGIES.keys()))
         st.markdown(
             f"<div style='background:#1e1e2e; border-left: 4px solid {SEGMENT_COLORS[selected_seg]}; "
@@ -614,12 +614,12 @@ def tab_segments(df: pd.DataFrame) -> None:
     radar_img = FIG_DIR / "segment_radar.png"
     if radar_img.exists():
         st.subheader("📡 Segment Radar Profiles")
-        st.image(str(radar_img), use_column_width=True)
+        st.image(str(radar_img), use_container_width=True)
 
     # Churn by segment bar
     churn_img = FIG_DIR / "segment_churn_bar.png"
     if churn_img.exists():
-        st.image(str(churn_img), use_column_width=True)
+        st.image(str(churn_img), use_container_width=True)
 
     # Segment data table with export
     st.markdown("---")
@@ -673,7 +673,7 @@ def tab_insights() -> None:
         p = FIG_DIR / "shap_bar_summary.png"
         if p.exists():
             st.subheader("🎯 SHAP Feature Importance")
-            st.image(str(p), use_column_width=True)
+            st.image(str(p), use_container_width=True)
         else:
             st.info("Run `src/explain.py` to generate SHAP plots.")
 
@@ -681,7 +681,7 @@ def tab_insights() -> None:
         p = FIG_DIR / "shap_beeswarm.png"
         if p.exists():
             st.subheader("🐝 SHAP Beeswarm Plot")
-            st.image(str(p), use_column_width=True)
+            st.image(str(p), use_container_width=True)
 
     st.markdown("---")
 
@@ -690,13 +690,13 @@ def tab_insights() -> None:
         p = FIG_DIR / "shap_waterfall.png"
         if p.exists():
             st.subheader("🌊 Waterfall — Highest Risk Player")
-            st.image(str(p), use_column_width=True)
+            st.image(str(p), use_container_width=True)
 
     with col_calib:
         p = FIG_DIR / "calibration_plot.png"
         if p.exists():
             st.subheader("📐 Calibration Plot")
-            st.image(str(p), use_column_width=True)
+            st.image(str(p), use_container_width=True)
 
     st.markdown("---")
 
@@ -706,12 +706,12 @@ def tab_insights() -> None:
         p = FIG_DIR / "roc_curves.png"
         if p.exists():
             st.subheader("📈 ROC Curves")
-            st.image(str(p), use_column_width=True)
+            st.image(str(p), use_container_width=True)
     with col_pr:
         p = FIG_DIR / "pr_curves.png"
         if p.exists():
             st.subheader("📊 Precision-Recall Curves")
-            st.image(str(p), use_column_width=True)
+            st.image(str(p), use_container_width=True)
 
     # Top features table
     top10_path = REPORT_DIR / "top10_features.csv"
