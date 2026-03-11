@@ -75,3 +75,6 @@ error_log*.txt
 api_err*.txt
 optuna.db
 optuna_*.db
+
+# Claude
+.claude/
