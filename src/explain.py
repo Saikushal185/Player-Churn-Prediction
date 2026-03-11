@@ -51,7 +51,7 @@ FEATURE_NAMES = [
     "total_playtime_hours", "win_rate", "total_spend_usd", "friend_count",
     "achievement_count", "consecutive_losses",
     "rfm_recency", "rfm_frequency", "rfm_monetary", "rfm_score",
-    "game_mode_primary_PvE", "game_mode_primary_Co-op", "game_mode_primary_Solo",
+    "game_mode_primary_PvE", "game_mode_primary_PvP", "game_mode_primary_Solo",
 ]
 
 FEATURE_DESCRIPTIONS = {
@@ -293,16 +293,25 @@ def generate_risk_narrative(
             reasons.append(f"{losses} consecutive losses ({direction} churn risk)")
         elif "spend" in fname.lower():
             spend = player_row.get("total_spend_usd", 0)
-            reasons.append(f"Total spend ${spend:.0f} ({direction} churn risk)")
+            try:
+                reasons.append(f"Total spend ${float(spend):.0f} ({direction} churn risk)")
+            except (ValueError, TypeError):
+                reasons.append(f"Total spend unknown ({direction} churn risk)")
         elif "session_count" in fname:
             sc = player_row.get("session_count", "?")
             reasons.append(f"{sc} sessions total ({direction} churn risk)")
         elif "win_rate" in fname:
-            wr = player_row.get("win_rate", "?")
-            reasons.append(f"Win rate {wr:.0%} ({direction} churn risk)")
+            wr = player_row.get("win_rate", None)
+            try:
+                reasons.append(f"Win rate {float(wr):.0%} ({direction} churn risk)")
+            except (ValueError, TypeError):
+                reasons.append(f"Win rate unknown ({direction} churn risk)")
         elif "friend_count" in fname:
-            fc = player_row.get("friend_count", "?")
-            reasons.append(f"{int(fc)} in-game friends ({direction} churn risk)")
+            fc = player_row.get("friend_count", None)
+            try:
+                reasons.append(f"{int(fc)} in-game friends ({direction} churn risk)")
+            except (ValueError, TypeError):
+                reasons.append(f"Friend count unknown ({direction} churn risk)")
         else:
             desc = FEATURE_DESCRIPTIONS.get(fname, fname)
             reasons.append(f"Feature '{desc}' {direction} churn risk")
