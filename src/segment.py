@@ -362,8 +362,11 @@ def plot_cluster_scatter_2d(df: pd.DataFrame, X_scaled: np.ndarray, fig_dir: Pat
     fig.update_traces(marker_size=4)
     fig_dir.mkdir(parents=True, exist_ok=True)
     fig.write_html(str(fig_dir / "cluster_scatter.html"))
-    fig.write_image(str(fig_dir / "cluster_scatter.png"), width=1000, height=600, scale=1.5)
-    log.info("Cluster scatter saved → %s", fig_dir / "cluster_scatter.png")
+    try:
+        fig.write_image(str(fig_dir / "cluster_scatter.png"), width=1000, height=600, scale=1.5)
+        log.info("Cluster scatter saved → %s", fig_dir / "cluster_scatter.png")
+    except Exception as exc:
+        log.warning("Skipping cluster scatter PNG export; HTML export is still available: %s", exc)
 
 
 def plot_segment_radar(profiles: pd.DataFrame, fig_dir: Path) -> None:
@@ -407,8 +410,11 @@ def plot_segment_radar(profiles: pd.DataFrame, fig_dir: Path) -> None:
         height=600,
     )
     fig.write_html(str(fig_dir / "segment_radar.html"))
-    fig.write_image(str(fig_dir / "segment_radar.png"), width=800, height=600, scale=1.5)
-    log.info("Radar chart saved → %s", fig_dir / "segment_radar.png")
+    try:
+        fig.write_image(str(fig_dir / "segment_radar.png"), width=800, height=600, scale=1.5)
+        log.info("Radar chart saved → %s", fig_dir / "segment_radar.png")
+    except Exception as exc:
+        log.warning("Skipping radar PNG export; HTML export is still available: %s", exc)
 
 
 def plot_segment_churn_bar(df: pd.DataFrame, fig_dir: Path) -> None:

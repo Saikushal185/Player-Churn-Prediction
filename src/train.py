@@ -29,6 +29,7 @@ Saves:  models/best_model.pkl
 """
 
 import logging
+import os
 import warnings
 from pathlib import Path
 
@@ -77,9 +78,22 @@ DATA_DIR = ROOT / "data"
 MODEL_DIR = ROOT / "models"
 FIG_DIR = ROOT / "reports" / "figures"
 
-N_OPTUNA_TRIALS = 30   # Increase for better tuning; reduce for speed
-OPTUNA_TIMEOUT = 120   # Max seconds per model tuning run (wall-clock guard)
-CV_FOLDS = 5
+def _int_env(name: str, default: int, minimum: int = 1) -> int:
+    """Read an integer env var with a lower bound and safe fallback."""
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return max(minimum, int(raw))
+    except ValueError:
+        log.warning("Invalid %s=%r; using default %d", name, raw, default)
+        return default
+
+
+N_OPTUNA_TRIALS = _int_env("PLAYER_CHURN_OPTUNA_TRIALS", 30)   # Increase for better tuning; reduce for speed
+OPTUNA_TIMEOUT = _int_env("PLAYER_CHURN_OPTUNA_TIMEOUT", 120)  # Max seconds per model tuning run (wall-clock guard)
+CV_FOLDS = _int_env("PLAYER_CHURN_CV_FOLDS", 5)
+DEFAULT_N_JOBS = _int_env("PLAYER_CHURN_N_JOBS", 1)
 
 
 # ---------------------------------------------------------------------------
@@ -132,6 +146,25 @@ def apply_smote(X: np.ndarray, y: np.ndarray, seed: int = 42) -> tuple:
     return X_res, y_res
 
 
+def cross_val_auc(model, X: np.ndarray, y: np.ndarray, cv) -> np.ndarray:
+    """
+    Run ROC-AUC cross-validation with a conservative worker default.
+
+    Some Windows/sandboxed environments reject joblib's process backend with
+    PermissionError. We default to single-process execution for portability,
+    while still allowing an opt-in worker count via PLAYER_CHURN_N_JOBS.
+    """
+    return cross_val_score(
+        model,
+        X,
+        y,
+        cv=cv,
+        scoring="roc_auc",
+        n_jobs=DEFAULT_N_JOBS,
+        error_score="raise",
+    )
+
+
 # ---------------------------------------------------------------------------
 # Model factories and Optuna objectives
 # ---------------------------------------------------------------------------
@@ -143,11 +176,11 @@ def _objective_rf(trial, X, y, cv):
         "min_samples_split": trial.suggest_int("min_samples_split", 2, 20),
         "min_samples_leaf": trial.suggest_int("min_samples_leaf", 1, 10),
         "class_weight": "balanced",
-        "n_jobs": -1,
+        "n_jobs": DEFAULT_N_JOBS,
         "random_state": 42,
     }
     model = RandomForestClassifier(**params)
-    scores = cross_val_score(model, X, y, cv=cv, scoring="roc_auc", n_jobs=-1)
+    scores = cross_val_auc(model, X, y, cv)
     return scores.mean()
 
 
@@ -162,10 +195,10 @@ def _objective_xgb(trial, X, y, cv):
         "scale_pos_weight": trial.suggest_float("scale_pos_weight", 1.0, 5.0),
         "eval_metric": "logloss",
         "random_state": 42,
-        "n_jobs": -1,
+        "n_jobs": DEFAULT_N_JOBS,
     }
     model = XGBClassifier(**params)
-    scores = cross_val_score(model, X, y, cv=cv, scoring="roc_auc", n_jobs=-1)
+    scores = cross_val_auc(model, X, y, cv)
     return scores.mean()
 
 
@@ -180,11 +213,11 @@ def _objective_lgbm(trial, X, y, cv):
         "min_child_samples": trial.suggest_int("min_child_samples", 5, 50),
         "class_weight": "balanced",
         "random_state": 42,
-        "n_jobs": -1,
+        "n_jobs": DEFAULT_N_JOBS,
         "verbosity": -1,
     }
     model = LGBMClassifier(**params)
-    scores = cross_val_score(model, X, y, cv=cv, scoring="roc_auc", n_jobs=-1)
+    scores = cross_val_auc(model, X, y, cv)
     return scores.mean()
 
 
@@ -268,7 +301,7 @@ def train_all_models(
     rf_study.optimize(lambda t: _objective_rf(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
     log.info("RF Optuna best trial value (CV AUC): %.4f", rf_study.best_value)
     best_rf_params = rf_study.best_params
-    best_rf_params.update({"class_weight": "balanced", "n_jobs": -1, "random_state": 42})
+    best_rf_params.update({"class_weight": "balanced", "n_jobs": DEFAULT_N_JOBS, "random_state": 42})
     rf = RandomForestClassifier(**best_rf_params)
     rf.fit(X_train, y_train)
     rf_proba = rf.predict_proba(X_val)[:, 1]
@@ -286,7 +319,7 @@ def train_all_models(
     xgb_study.optimize(lambda t: _objective_xgb(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
     best_xgb_params = xgb_study.best_params
     best_xgb_params.update({"eval_metric": "logloss",
-                              "random_state": 42, "n_jobs": -1})
+                              "random_state": 42, "n_jobs": DEFAULT_N_JOBS})
     xgb = XGBClassifier(**best_xgb_params)
     xgb.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
     xgb_proba = xgb.predict_proba(X_val)[:, 1]
@@ -304,7 +337,7 @@ def train_all_models(
     lgbm_study.optimize(lambda t: _objective_lgbm(t, X_train, y_train, cv), n_trials=n_trials, timeout=OPTUNA_TIMEOUT)
     best_lgbm_params = lgbm_study.best_params
     best_lgbm_params.update({"class_weight": "balanced", "random_state": 42,
-                               "n_jobs": -1, "verbosity": -1})
+                               "n_jobs": DEFAULT_N_JOBS, "verbosity": -1})
     lgbm = LGBMClassifier(**best_lgbm_params)
     lgbm.fit(X_train, y_train)
     lgbm_proba = lgbm.predict_proba(X_val)[:, 1]
@@ -499,6 +532,13 @@ def main() -> None:
     """Full training pipeline: load → SMOTE → train → evaluate → save."""
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     FIG_DIR.mkdir(parents=True, exist_ok=True)
+    log.info(
+        "Training config → optuna_trials=%d | optuna_timeout=%ss | cv_folds=%d | n_jobs=%d",
+        N_OPTUNA_TRIALS,
+        OPTUNA_TIMEOUT,
+        CV_FOLDS,
+        DEFAULT_N_JOBS,
+    )
 
     X_train, y_train, X_val, y_val, X_test, y_test = load_splits()
 
@@ -525,6 +565,13 @@ def main() -> None:
     )
     comparison_df.to_csv(MODEL_DIR / "model_comparison.csv", index=False)
     log.info("Model comparison:\n%s", comparison_df.to_string(index=False))
+
+    # Keep the persisted inference bundle Windows-friendly.
+    if hasattr(best["model"], "get_params") and "n_jobs" in best["model"].get_params():
+        try:
+            best["model"].set_params(n_jobs=1)
+        except Exception:
+            pass
 
     # Save best model + threshold
     joblib.dump(

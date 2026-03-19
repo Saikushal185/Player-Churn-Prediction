@@ -24,6 +24,8 @@ import numpy as np
 import pandas as pd
 import shap
 
+from runtime_compat import prepare_model_for_inference
+
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
@@ -86,7 +88,7 @@ def load_model_and_data() -> tuple:
     (model, threshold, X_test, y_test, feature_names, df_players)
     """
     bundle = joblib.load(MODEL_DIR / "best_model.pkl")
-    model = bundle["model"]
+    model = prepare_model_for_inference(bundle["model"])
     threshold = bundle["threshold"]
     model_name = bundle["name"]
     log.info("Loaded model: %s  (threshold=%.4f)", model_name, threshold)

@@ -54,6 +54,21 @@ REPORT_DIR = ROOT / "reports"
 
 log = logging.getLogger(__name__)
 
+
+def _prepare_loaded_model(model):
+    """Force inference-safe settings on loaded estimators."""
+    if model is None:
+        return None
+
+    if hasattr(model, "get_params") and "n_jobs" in model.get_params():
+        try:
+            model.set_params(n_jobs=1)
+        except Exception:
+            # Some wrapped estimators expose n_jobs but reject mutation post-fit.
+            pass
+
+    return model
+
 # ---------------------------------------------------------------------------
 # Page config
 # ---------------------------------------------------------------------------
@@ -115,7 +130,9 @@ def load_model_bundle() -> dict | None:
     p = MODEL_DIR / "best_model.pkl"
     if not p.exists():
         return None
-    return joblib.load(p)
+    bundle = joblib.load(p)
+    bundle["model"] = _prepare_loaded_model(bundle.get("model"))
+    return bundle
 
 
 @st.cache_resource(show_spinner=False)
@@ -583,7 +600,7 @@ def tab_segments(df: pd.DataFrame) -> None:
         scatter_html = FIG_DIR / "cluster_scatter.html"
         if scatter_html.exists():
             from streamlit.components.v1 import html as st_html
-            with open(scatter_html) as f:
+            with open(scatter_html, encoding='utf-8') as f:
                 st_html(f.read(), height=500, scrolling=False)
         else:
             # Build scatter on the fly using engagement_score + rfm_score

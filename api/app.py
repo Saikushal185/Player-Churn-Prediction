@@ -76,6 +76,21 @@ _preprocessor = None
 _model_comparison = None
 
 
+def _prepare_loaded_model(model):
+    """Force inference-safe settings on loaded estimators."""
+    if model is None:
+        return None
+
+    if hasattr(model, "get_params") and "n_jobs" in model.get_params():
+        try:
+            model.set_params(n_jobs=1)
+        except Exception:
+            # Some wrapped estimators expose n_jobs but reject mutation post-fit.
+            pass
+
+    return model
+
+
 def _load_artifacts() -> None:
     """Load the model bundle and preprocessor once at startup."""
     global _model_bundle, _preprocessor, _model_comparison
@@ -86,6 +101,7 @@ def _load_artifacts() -> None:
 
     if model_path.exists():
         _model_bundle = joblib.load(model_path)
+        _model_bundle["model"] = _prepare_loaded_model(_model_bundle.get("model"))
         log.info("Loaded model: %s", _model_bundle.get("name", "unknown"))
     else:
         log.warning("Model not found at %s. Run src/train.py first.", model_path)
@@ -243,6 +259,12 @@ def _build_prediction_response(player_dict: dict, proba: float, threshold: float
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+
+@app.route("/", methods=["GET"])
+def index() -> tuple:
+    """Root endpoint."""
+    return jsonify({"message": "Player Churn API is running. Check /health"}), 200
+
 
 @app.route("/health", methods=["GET"])
 def health() -> tuple:
